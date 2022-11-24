@@ -58,7 +58,7 @@
                                     <div>
                                         <div>
                                             <c:if test="${lineItem.productModel.discount.discountPercent > 0}">
-                                                <span class="price-old"><fmt:formatNumber type="number"
+                                                <span class="price-old" style="text-decoration: line-through"><fmt:formatNumber type="number"
                                                                                           value="${lineItem.productModel.price}"/> đ</span>
                                                 <span class="price-new"><fmt:formatNumber type="number"
                                                                                           value="${lineItem.productModel.price-lineItem.productModel.price*lineItem.productModel.discount.discountPercent/100}"/> đ</span>

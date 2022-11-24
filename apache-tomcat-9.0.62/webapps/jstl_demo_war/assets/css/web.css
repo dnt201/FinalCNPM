@@ -1,0 +1,32 @@
+*,
+*::after,
+*::before {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+p{
+    margin: 0;
+}
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+.min-h-100 {
+    min-height:80vh;
+}
+
+body {
+    font-family: "Noto Sans";
+}
+
+.vertical-center {
+    display: flex;
+    align-items: center;
+}
+
+ol, ul {
+    list-style: none;
+}

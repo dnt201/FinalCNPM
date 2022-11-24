@@ -44,7 +44,7 @@ public class ProductManagementController {
         String action = request.getParameter("action");
         String lazyError = request.getParameter("lazyError");
         request.setCharacterEncoding("UTF-8");
-        if(lazyError!=null && lazyError.equals("fillBlank"))
+        if (lazyError != null && lazyError.equals("fillBlank"))
             request.setAttribute(CoreConstant.MESSAGE_RESPONSE, "Fill full information!");
         if (action == null) {
             url = "admin/list/ProductList";
@@ -59,10 +59,10 @@ public class ProductManagementController {
             product = productService.findByID(id);
             request.setAttribute(CoreConstant.MODEL, product);
         } else if (action.equals(CoreConstant.ACTION_ADD)) {
-            String  productName = request.getParameter("productName");
+            String productName = request.getParameter("productName");
             String description = request.getParameter("description");
             String image = request.getParameter("image");
-            String price= request.getParameter("price");
+            String price = request.getParameter("price");
             String brand_id = request.getParameter("brand_id");
             String discount_id = request.getParameter("discount_id");
             String sCpu = request.getParameter("sCpu");
@@ -82,52 +82,58 @@ public class ProductManagementController {
             String color = request.getParameter("color");
             String pin = request.getParameter("pin");
             String connection = request.getParameter("connection");
-            try{
-                System.out.println("Trying to big");
+            try {
                 BigDecimal bigDecimal = new BigDecimal(price);
                 product = FormUtil.toModel(ProductModel.class, request);
-                if ( 1==0) {
-                    System.out.println("Get intro is blank");
-                    return "redirect:/admin/product?action=insert&lazyError=fillBlank";
+
+                if (productService.findByName(product.getProductName()) == null) {
+                    BrandModel brand = new BrandModel();
+                    DiscountModel discount = new DiscountModel();
+
+                    brand.setBrand_id(Integer.parseInt(request.getParameter("brand_id")));
+                    discount.setDiscount_id(Integer.parseInt(request.getParameter("discount_id")));
+
+                    product.setDiscount(discount);
+                    product.setBrandModel(brand);
+                    productService.save(product);
+
+                    url = "admin/insert/ProductInsert";
+                    request.setAttribute("success", true);
+                    request.setAttribute(CoreConstant.MESSAGE_RESPONSE, "Add Product Success");
+//                    request.setAttribute(CoreConstant.MODEL, product);
+
+                } else {
+                    url = "admin/insert/ProductInsert";
+                    request.setAttribute("lazyAddFalse",true);
+                    request.setAttribute(CoreConstant.MESSAGE_RESPONSE, "Add Product Fail. Name product already exists  ");
                 }
-                else {
-                    if (productService.findByName(product.getProductName()) == null) {
-                        DiscountModel discount = new DiscountModel();
-                        BrandModel brand = new BrandModel();
 
-                        brand.setBrand_id(Integer.parseInt(request.getParameter("brand_id")));
-                        discount.setDiscount_id(Integer.parseInt(request.getParameter("discount_id")));
-
-                        product.setDiscount(discount);
-                        product.setBrandModel(brand);
-                        productService.save(product);
-
-                        url = "admin/insert/ProductInsert";
-                        request.setAttribute(CoreConstant.MESSAGE_RESPONSE, "Add Product Success");
-                    } else {
-                        url = "admin/insert/ProductInsert";
-                        request.setAttribute(CoreConstant.MESSAGE_RESPONSE, "Add Product Fail.");
-                    }
-                }
-            }
-            catch(Exception e){
+            } catch (Exception e) {
+                request.setAttribute("success",false);
                 url = "admin/insert/ProductInsert";
                 request.setAttribute(CoreConstant.MESSAGE_RESPONSE, "Add Product Fail. Price is not valid");
             }
 
         } else if (action.equals(CoreConstant.ACTION_UPDATE)) {
-            product = FormUtil.toModel(ProductModel.class, request);
+            String price = request.getParameter("price");
+            try {
 
-           if(1 == 0) {
-                request.setAttribute(CoreConstant.MESSAGE_RESPONSE, "Fill all information");
-                return String.format("redirect:/admin/product?action=edit&lazyError=fillBlank&product_id="+product.getProduct_id().toString());
-            }
-            else {
+                BigDecimal bigDecimal = new BigDecimal(price);
+                product = FormUtil.toModel(ProductModel.class, request);
+                request.setAttribute("productModel", product);
+
+
                 System.out.println(request.getParameter("image"));
-                ProductModel productCur = productService.findByName(product.getProductName());
+                ProductModel productCur = productService.findByID(product.getProduct_id());
+                ProductModel findName = productService.findByName(product.getProductName());
+                if (productService.findByName(product.getProductName()) !=null
+                        && !findName.getProduct_id().equals(productCur.getProduct_id())) {
 
-
-                if (productCur == null) {
+                    request.setAttribute(CoreConstant.MODEL, productCur);
+                    url = "admin/insert/ProductInsert";
+                    request.setAttribute("upLoadFail", true);
+                    request.setAttribute(CoreConstant.MESSAGE_RESPONSE, "Update Product Fail. Product Name Exist");
+                } else {
                     DiscountModel discount = new DiscountModel();
                     BrandModel brand = new BrandModel();
 
@@ -137,33 +143,30 @@ public class ProductManagementController {
                     product.setDiscount(discount);
                     product.setBrandModel(brand);
                     System.out.println(product.getImage());
+
                     productService.update(product);
                     request.setAttribute(CoreConstant.MODEL, product);
                     url = "admin/insert/ProductInsert";
+                    request.setAttribute("upLoadFail", false);
                     request.setAttribute(CoreConstant.MESSAGE_RESPONSE, "Update Product Success");
-                } else {
-                    if (productCur.getProduct_id().equals(product.getProduct_id())) {
-                        DiscountModel discount = new DiscountModel();
-                        BrandModel brand = new BrandModel();
-
-                        brand.setBrand_id(Integer.parseInt(request.getParameter("brand_id")));
-                        discount.setDiscount_id(Integer.parseInt(request.getParameter("discount_id")));
-
-                        product.setDiscount(discount);
-                        product.setBrandModel(brand);
-                        System.out.println(product.getImage());
-
-                        productService.update(product);
-                            request.setAttribute(CoreConstant.MODEL, product);
-                        url = "admin/insert/ProductInsert";
-                        request.setAttribute(CoreConstant.MESSAGE_RESPONSE, "Update Product Success");
-                    } else {
-                        request.setAttribute(CoreConstant.MODEL, productCur);
-                        url = "admin/insert/ProductInsert";
-                        request.setAttribute(CoreConstant.MESSAGE_RESPONSE, "Update Product Fail. Product Name Exist");
-                    }
                 }
+
+
+            } catch (Exception e) {
+                url = "admin/insert/ProductInsert";
+                try {
+                    int lazy = Integer.parseInt(request.getParameter("product_id"));
+                    ProductModel productCur = productService.findByID(Integer.parseInt(request.getParameter("product_id")));
+                    request.setAttribute(CoreConstant.MODEL, productCur);
+                    request.setAttribute("upLoadFail", true);
+                    request.setAttribute(CoreConstant.MESSAGE_RESPONSE, "Update Product Fail. Price is invalid");
+                } catch (Exception exception) {
+                    request.setAttribute("upLoadFail", true);
+                    request.setAttribute(CoreConstant.MESSAGE_RESPONSE, "Id went wrong, please try again!");
+                }
+
             }
+
         } else if (action.equals(CoreConstant.ACTION_DELETE)) {
             Integer id = Integer.parseInt(request.getParameter("product_id"));
             List<OrderItemsModel> orderItemsModels = orderItemsService.findByProductId(id);

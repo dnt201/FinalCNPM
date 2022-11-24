@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.Date;
 
@@ -26,32 +27,30 @@ import java.util.Date;
 public class AuthController {
 
     @GetMapping("/login")
-    public String login( HttpServletRequest request){
+    public String login(HttpServletRequest request) {
         String message = request.getParameter("message");
 
-        System.out.println("Login get");
 
-        if(SessionUtil.getInstance().getValue(request, CoreConstant.SESSION_DATA)!=null) {
+        if (SessionUtil.getInstance().getValue(request, CoreConstant.SESSION_DATA) != null) {
             return "redirect:/home-page";
         }
-        if(message!=null){
-               if(message.equals("username_password_invalid"))
-                   request.setAttribute("messageResponse", "Tài khoản hoặc mật khẩu không đúng, vui lòng thử lại!");
-               else if(message.equals("not_login"))
-                   request.setAttribute("messageResponse","Đăng nhập để hoàn tất đơn hàng!");
-               else if(message.equals("not-yet-login"))
-                   request.setAttribute("messageResponse","Bạn chưa đăng nhập!");
-               else if(message.equals("signupSuccess"))
-                   request.setAttribute("messageResponse","Chào mừng bạn đến với shop, đăng nhập và tận hưởng ưu đãi!");
-           }
+        if (message != null) {
+            if (message.equals("username_password_invalid"))
+                request.setAttribute("messageResponse", "Tài khoản hoặc mật khẩu không đúng, vui lòng thử lại!");
+            else if (message.equals("not_login"))
+                request.setAttribute("messageResponse", "Đăng nhập để hoàn tất đơn hàng!");
+            else if (message.equals("not-yet-login"))
+                request.setAttribute("messageResponse", "Bạn chưa đăng nhập!");
+            else if (message.equals("signupSuccess"))
+                request.setAttribute("messageResponse", "Chào mừng bạn đến với shop, đăng nhập và tận hưởng ưu đãi!");
+        }
         return "web/login";
     }
+
     @PostMapping("/login")
-    public String login(HttpServletRequest request, HttpServletResponse response){
+    public String login(HttpServletRequest request, HttpServletResponse response) {
         IUserService userService = new UserService();
         String action = request.getParameter("action");
-
-
 
         if (action != null && action.equals("login")) {
             UsersModel model = FormUtil.toModel(UsersModel.class, request);
@@ -67,26 +66,25 @@ public class AuthController {
                     } else if (role.equals(CoreConstant.ROLE_ADMIN)) {
                         return "redirect:/admin";
                     }
-                }
-                else{ request.setAttribute(CoreConstant.ALERT, CoreConstant.TYPE_ERROR);
+                } else {
+                    request.setAttribute(CoreConstant.ALERT, CoreConstant.TYPE_ERROR);
                     request.setAttribute(CoreConstant.MESSAGE_RESPONSE, "Username or password is incorrect!");
                     return "redirect:/login?action=login&message=username_password_invalid&alert=danger";
                 }
-            }
-            else {
+            } else {
                 request.setAttribute(CoreConstant.MESSAGE_RESPONSE, "Username or password is incorrect!");
                 return "redirect:/login?action=login&message=username_password_invalid&alert=danger";
             }
-        }
-        else{
+        } else {
             request.setAttribute(CoreConstant.MESSAGE_RESPONSE, "Username or password is incorrect!");
             return "redirect:/login?action=login&message=username_password_invalid&alert=danger";
 
         }
         return "web/login";
     }
+
     @GetMapping("/logout")
-    public String logout (HttpServletRequest request, HttpServletResponse response) {
+    public String logout(HttpServletRequest request, HttpServletResponse response) {
         SessionUtil.getInstance().removeValue(request, CoreConstant.SESSION_DATA);
         System.out.println("Logout");
         //SessionUtil.getInstance().removeValue(request, order);
@@ -95,37 +93,68 @@ public class AuthController {
 
 
     @GetMapping("/register")
-    public String registerGet (HttpServletRequest request, HttpServletResponse response){
+    public String registerGet(HttpServletRequest request, HttpServletResponse response) {
         String action = request.getParameter("action");
-        if (action != null && action.equals("register")){
-            String message = request.getParameter("message");
-            if (message!=null){
-                if(message.equals("user_has_exist"))
-                    request.setAttribute("messageResponse", "Username đã tồn tại, vui lòng sử dụng username khác!!!");
-            }
-        }
+
+        request.setAttribute("name", request.getAttribute("name"));
+        request.setAttribute("username", request.getAttribute("username"));
+        request.setAttribute("address", request.getAttribute("address"));
+        request.setAttribute("phone", request.getAttribute("phone"));
+        request.setAttribute("email", request.getAttribute("email"));
+        request.setAttribute("messageError", request.getAttribute("messageError"));
+//        request.setAttribute("messageError", "Username đã tồn tại, vui lòng sử dụng username khác!!!");
+//        if (action != null && action.equals("register")) {
+//            String message = request.getParameter("message");
+//            if (message != null) {
+//                if (message.equals("user_has_exist")){
+//                    System.out.println( request.getAttribute("name")+ request.getParameter("name"));
+//
+//                }
+//            }
+//        }
         return "web/register";
     }
+
     @PostMapping("/register")
-    public String registerPost (HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
+    public String registerPost(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
         RoleService roleService = new RoleService();
         IUserService userService = new UserService();
         request.setCharacterEncoding("UTF-8");
         UsersModel usersModel = FormUtil.toModel(UsersModel.class, request);
+        String name = request.getParameter("name");
+//        byte[] bytes = name.getBytes(StandardCharsets.ISO_8859_1);
+//        name = new String(bytes, StandardCharsets.UTF_8);
 
+        String username = request.getParameter("username");
+
+        String address = request.getParameter("address");
+//        byte[] bytesAddress = address.getBytes(StandardCharsets.ISO_8859_1);
+//        address = new String(bytesAddress, StandardCharsets.UTF_8);
+
+        String email = request.getParameter("email");
+        String phone = request.getParameter("phone");
+
+        System.out.println(name + username + address + email + phone);
         System.out.println(usersModel.toString());
         System.out.println(request.getParameter("name"));
         UsersModel userExist = userService.isUserExist(usersModel);
 
-        if (userExist != null)
-            return "redirect:/register?action=register&&message=user_has_exist";
-        else
-        {
+
+        if (userExist != null) {
+            request.setAttribute("success", false);
+            request.setAttribute("messageError","Username đã tồn tại, vui lòng sử dụng username khác!!!");
+            request.setAttribute("name", name);
+            request.setAttribute("username", username);
+            request.setAttribute("address", address);
+            request.setAttribute("phone", phone);
+            request.setAttribute("email", email);
+            return "web/register";
+        } else {
             System.out.println("into");
             RoleModel role = new RoleModel();
             usersModel.setRoleModel(role);
             Date date = new Date();
-            Timestamp ts =  new Timestamp(date.getTime());
+            Timestamp ts = new Timestamp(date.getTime());
             usersModel.setCreateAt(ts);
 
             Integer role_id = roleService.findRoleByRoleName(CoreConstant.ROLE_USER);

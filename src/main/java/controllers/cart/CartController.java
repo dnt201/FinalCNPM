@@ -31,20 +31,20 @@ public class CartController {
         this.orderDetailsService = new OrderDetailsService();
         this.orderItemsService = new OrderItemsService();
     }
+
     @RequestMapping("/cart")
-    public String cart(HttpServletRequest request){
+    public String cart(HttpServletRequest request) {
         HttpSession session = request.getSession();
         String action = request.getParameter("action");
 
         if (action == null) {
             String message = request.getParameter("message");
-            if(message!=null){
-                if(message.equals("removeSuccess"))
+            if (message != null) {
+                if (message.equals("removeSuccess"))
                     request.setAttribute("messageResponse", "Xoá thành công");
             }
             return "cart/cart";
-        }
-        else if (action.equals("add")) {
+        } else if (action.equals("add")) {
             Integer quantity = 1;
             Integer id;
             if (request.getParameter("product_id") != null) {
@@ -102,15 +102,14 @@ public class CartController {
             } else {
                 return "redirect:/home-page";
             }
-        }
-        else if (action.equals("remove")){
+        } else if (action.equals("remove")) {
             OrderDetailsModel order = (OrderDetailsModel) session.getAttribute("order");
             List<OrderItemsModel> listItems = order.getOrderItemsList();
 
             int id = Integer.parseInt(request.getParameter("product_id"));
 
-            for (int i=0;i<listItems.size();i++) {
-                if (listItems.get(i).getProductModel().getProduct_id() == id){
+            for (int i = 0; i < listItems.size(); i++) {
+                if (listItems.get(i).getProductModel().getProduct_id() == id) {
                     OrderItemsModel orderItemsModel = listItems.get(i);
                     order.setTotal(order.getTotal().subtract(BigDecimal.valueOf(orderItemsModel.getQuantity()).multiply(orderItemsModel.getProductModel().getPrice()
                             .subtract(orderItemsModel.getProductModel().getPrice().multiply(orderItemsModel.getProductModel().getDiscount().getDiscountPercent().divide(BigDecimal.valueOf(100)))))));
@@ -126,8 +125,7 @@ public class CartController {
             session.setAttribute("order", order);
 
             return "redirect:/cart?message=removeSuccess";
-        }
-        else if (action.equals("update")){
+        } else if (action.equals("update")) {
             OrderDetailsModel order = (OrderDetailsModel) session.getAttribute("order");
             List<OrderItemsModel> listItems = order.getOrderItemsList();
 
@@ -135,15 +133,20 @@ public class CartController {
             int quantity = Integer.parseInt(request.getParameter("quantity"));
             int old_quantity = 0;
 
-            for (int i=0;i<listItems.size();i++)
+            for (int i = 0; i < listItems.size(); i++)
                 if (listItems.get(i).getProductModel().getProduct_id() == id) {
-                    if (quantity < 1)
+                    if (quantity < 1) {
+                        order.setTotal(
+                                order.getTotal()
+                                        .subtract(BigDecimal.valueOf(listItems.get(i).getQuantity()).multiply(listItems.get(i).getProductModel().getPrice()
+                                                .subtract(listItems.get(i).getProductModel().getPrice().multiply(listItems.get(i).getProductModel().getDiscount().getDiscountPercent().divide(BigDecimal.valueOf(100)))))));
                         listItems.remove(listItems.get(i));
-                    else {
+
+                    } else {
                         old_quantity = listItems.get(i).getQuantity();
                         listItems.get(i).setQuantity(quantity);
                         OrderItemsModel orderItemsModel = listItems.get(i);
-                        order.setTotal(order.getTotal().add(BigDecimal.valueOf(quantity-old_quantity).multiply(orderItemsModel.getProductModel().getPrice()
+                        order.setTotal(order.getTotal().add(BigDecimal.valueOf(quantity - old_quantity).multiply(orderItemsModel.getProductModel().getPrice()
                                 .subtract(orderItemsModel.getProductModel().getPrice().multiply(orderItemsModel.getProductModel().getDiscount().getDiscountPercent().divide(BigDecimal.valueOf(100)))))));
                     }
                     break;
@@ -154,8 +157,7 @@ public class CartController {
             SessionUtil.getInstance().removeValue(request, "order");
             session.setAttribute("order", order);
             return "redirect:/cart?message=updateSuccess";
-        }
-        else if(action.equals("checkout")){
+        } else if (action.equals("checkout")) {
             UsersModel user = (UsersModel) SessionUtil.getInstance().getValue(request, "User");
             if (user == null) {
                 return "redirect:/login-dang-nhap?action=login&messageResponse=not_login";
@@ -186,24 +188,23 @@ public class CartController {
                     return "cart/cart";
                 }
             }
-        }
-        else return "cart/cart";
+        } else return "cart/cart";
     }
 
     @RequestMapping("/add-to-cart")
-    public String addToCart(HttpServletRequest request){
+    public String addToCart(HttpServletRequest request) {
         Integer quantity = 1;
         Integer id;
 
-        if (request.getParameter("product_id")!=null){
+        if (request.getParameter("product_id") != null) {
             id = Integer.parseInt(request.getParameter("product_id"));
             ProductModel product = productService.findByID(id);
 
-            if (product != null && request.getParameter("quantity") != null){
+            if (product != null && request.getParameter("quantity") != null) {
                 quantity = Integer.parseInt(request.getParameter("quantity"));
             }
             HttpSession session = request.getSession();
-            if (session.getAttribute("order") == null){
+            if (session.getAttribute("order") == null) {
                 BigDecimal total = new BigDecimal("0");
                 OrderDetailsModel order = new OrderDetailsModel();
                 List<OrderItemsModel> listItems = new ArrayList<OrderItemsModel>();
@@ -218,8 +219,7 @@ public class CartController {
                 BigDecimal number = new BigDecimal(quantity);
                 order.setTotal((total.add(product.getPrice())).multiply(number));
                 session.setAttribute("order", order);
-            }
-            else {
+            } else {
                 OrderDetailsModel order = (OrderDetailsModel) session.getAttribute("order");
                 List<OrderItemsModel> listItems = order.getOrderItemsList();
                 boolean check = false;
@@ -243,8 +243,7 @@ public class CartController {
                 session.setAttribute("order", order);
             }
             return "redirect:/cart";
-        }
-        else {
+        } else {
             return "redirect:/home-page";
         }
 

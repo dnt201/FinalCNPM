@@ -36,9 +36,9 @@
                         <p> 19110015 </p>
                     </div>
                     <div class="member_item">
-                        <img src="<c:url value='/assets/web/images/long.jpg'/>" alt="Avatar member"/>
-                        <p class="mb_4px"> V.B Long </p>
-                        <p> 19110234 </p>
+                        <img src="<c:url value='/assets/web/images/qanh.jpg'/>" alt="Avatar member"/>
+                        <p class="mb_4px"> D.N.Q Anh </p>
+                        <p> 19110164 </p>
                     </div>
                 </div>
             </div>

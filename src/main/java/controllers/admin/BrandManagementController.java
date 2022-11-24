@@ -67,24 +67,21 @@ public class BrandManagementController {
                 url = "admin/insert/BrandInsert";
                 request.setAttribute(CoreConstant.MESSAGE_RESPONSE, "Brand name is blank");
             } else {
-                BrandModel brandCur = brandService.findByName(brand.getBrand_name());
+                BrandModel brandCur = brandService.findById(brand.getBrand_id());
+                BrandModel temp = brandService.findByName(brand.getBrand_name());
 
-                if (brandCur == null) {
+
+                if (temp != null && !temp.getBrand_id().equals(brandCur.getBrand_id())) {
+                    request.setAttribute(CoreConstant.MODEL, brandCur);
+                    url = "admin/insert/BrandInsert";
+                    request.setAttribute("BrandModel", brandCur);
+                    request.setAttribute(CoreConstant.MESSAGE_RESPONSE, "Update Brand Fail. Product Name Exist");
+
+                } else {
                     brandService.update(brand);
                     request.setAttribute("BrandModel", brand);
                     url = "admin/insert/BrandInsert";
                     request.setAttribute(CoreConstant.MESSAGE_RESPONSE, "Update Brand Success");
-                } else {
-                    if (brandCur.getBrand_id().equals(brand.getBrand_id())) {
-                        brandService.update(brand);
-                        request.setAttribute("BrandModel", brand);
-                        url = "admin/insert/BrandInsert";
-                        request.setAttribute(CoreConstant.MESSAGE_RESPONSE, "Update Brand Success");
-                    } else {
-                        request.setAttribute("BrandModel", brandCur);
-                        url = "admin/insert/BrandInsert";
-                        request.setAttribute(CoreConstant.MESSAGE_RESPONSE, "Update Brand Fail. Discount Name exist");
-                    }
                 }
             }
         } else if (action.equals(CoreConstant.ACTION_DELETE)) {

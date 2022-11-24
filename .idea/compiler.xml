@@ -8,6 +8,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="springMVC_template" />
         <module name="template_decorators" />
+        <module name="Nhom9_Finalproject" />
       </profile>
     </annotationProcessing>
   </component>

@@ -11,6 +11,7 @@
             <div class="form_control wrap_name flex_column_start w48">
                 <label class="m-b-4px">Name</label>
                 <input maxlength="50" id="nameInput"
+                       value="${name}"
                        name="name"
                        class="m-b-4px w100 p-lr-4px w100" placeholder="Enter your name..."
                        required
@@ -19,6 +20,7 @@
             <div class="form_control wrap_email flex_column_start w48">
                 <label class="m-b-4px">Email</label>
                 <input maxlength="50" id="emailInput"
+                       value="${email}"
                        name="email"
                        class="m-b-4px w100 p-lr-4px w100" type="email" placeholder="Enter your email address..."
                        required
@@ -28,6 +30,7 @@
         <div class="form_control wrap_address flex_column_start w100">
             <label class="m-b-4px">Address</label>
             <input maxlength="100"  id="addressInput"
+                   value="${address}"
                    name="address"
                    class="w100 m-b-4px p-lr-4px" type="text" placeholder="Enter your password..."
             />
@@ -35,6 +38,7 @@
         <div class="form_control wrap_address flex_column_start w100">
             <label class="m-b-4px">Phone number</label>
             <input maxlength="10" id="phoneNumber"
+                   value="${phone}"
                    name="phone"
                    pattern="[0-9]{10}"
                    type="tel"
@@ -44,6 +48,7 @@
         <div class="form_control wrap_password flex_column_start w100">
             <label class="m-b-4px">Username</label>
             <input maxlength="50" id="usernameInput"
+                   value="${username}"
                    name="username"
                    class="w100 m-b-4px p-lr-4px" type="text" placeholder="Enter your username..."
                    required
@@ -65,8 +70,8 @@
                    required
             />
         </div>
-        <c:if test="${not empty messageResponse}">
-            <i class="red_16px_bold">${messageResponse}</i>
+        <c:if test="${not empty messageError}">
+            <i class="red_16px_bold">${messageError}</i>
         </c:if>
         <i id="mess_error_register" class="red_16px_bold"></i>
         <button class="register-btn" type="submit">Register</button>

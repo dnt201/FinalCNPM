@@ -59,17 +59,27 @@
                                         <h6 class="form-label fw-bold">Discount name <i
                                                 class="fa fa-file-signature"></i></h6>
                                         <input maxlength="30" required name="discountName" class="form-control"
+                                        <c:if test="${empty discountModel && param.discountName!=null && success == false}">
+                                         value="<%= request.getParameter("discountName") %>";
+                                        </c:if>
+                                        <c:if test="${not empty discountModel}">
                                                value="${discountModel.discountName}"
+                                        </c:if>
                                                placeholder="Enter your discount name..."
                                         >
                                     </div>
                                 </div>
                                 <div class="row gy-3">
                                     <div class="col-12">
-                                        <h6 class="form-label fw-bold">Description <i
+                                        <h6 class="form-label fw-bold">Description  <i
                                                 class="fa fa-cloud"></i></h6>
                                         <input required name="description" class="form-control"
+                                        <c:if test="${empty discountModel && param.description!=null  && success == false}">
+                                               value="<%= request.getParameter("description") %>";
+                                        </c:if>
+                                        <c:if test="${not empty discountModel}">
                                                value="${discountModel.description}"
+                                        </c:if>
                                                placeholder="Enter your description..."
                                         >
                                     </div>
@@ -79,7 +89,12 @@
                                         <h6 class="form-label fw-bold">Discount percent <i
                                                 class="fa fa-tags"></i></h6>
                                         <input  required name="discountPercent" class="form-control"
-                                               value="${discountModel.discountPercent}"
+                                        <c:if test="${empty discountModel && param.discountPercent!=null  && success == false}">
+                                                value="<%= request.getParameter("discountPercent") %>";
+                                        </c:if>
+                                        <c:if test="${not empty discountModel}">
+                                                value="${discountModel.discountPercent}"
+                                        </c:if>
                                                placeholder="Enter your discountPercent..."
                                         >
                                     </div>

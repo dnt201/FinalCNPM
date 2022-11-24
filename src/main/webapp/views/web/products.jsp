@@ -97,11 +97,20 @@
                         <img class="img-product" src="<c:url value='${item.image}'/>" alt="product images"/>
                         <h4 class="name"><b>${item.productName}</b></h4>
                         <div class="box-price">
-                            <div class="sale-product">
+                            <c:if test="${item.discount.discountPercent>0}">
+                                <div class="sale-product">
                                 <span class="price-sale"><fmt:formatNumber type="number"
                                                                            value="${item.price - item.price*item.discount.discountPercent/100}"/> đ</span>
-                                <span class="price-old"><fmt:formatNumber type="number" value="${item.price}"/> đ</span>
-                            </div>
+                                    <span class="price-old"><fmt:formatNumber type="number" value="${item.price}"/> đ</span>
+                                </div>
+                            </c:if>
+                            <c:if test="${item.discount.discountPercent==0}">
+                                <div class="sale-product">
+                                <span class="price-sale"><fmt:formatNumber type="number"
+                                                                           value="${item.price}"/> đ</span>
+                                </div>
+                            </c:if>
+
                             <c:if test="${User.getRoleModel().getRoleName() !='admin'}">
                                 <button class="add-to-card" onclick="handleAddWith('<c:url value='/cart?action=add&&product_id=${item.product_id}'/> ')">
                                     <i class="fas fa-cart-plus add-to-card-icon"></i>

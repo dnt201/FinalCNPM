@@ -1,0 +1,21 @@
+div.coreTags {
+    padding: 8px 16px;
+}
+
+div.coreTags table, th, td {
+    border: 1px solid;
+}
+
+div.coreTags  th, td {
+    padding: 4px 8px;
+}
+div.coreTags table {
+ width: 100%;
+}
+div.coreTags h1.title {
+    font-size: 32px;
+    text-align: center;
+    width: 100%;
+    font-weight: bold;
+    padding: 8px 16px;
+}
